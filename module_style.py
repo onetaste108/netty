@@ -10,7 +10,7 @@ def apply_mask():
         x1 = x[0][0]
         x2 = x[1][0]
         x2 = K.expand_dims(x2,-1)
-        x1 = tf.multiply(x1,x2)
+        x1 = tf.compat.v2.multiply(x1,x2)
         return K.expand_dims(x1,axis=0)
     return Lambda(fn)
 
