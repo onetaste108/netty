@@ -1,5 +1,8 @@
 from PIL import Image
 import numpy as np
+
+def norm(img):
+    return (img-np.min(img))/(np.max(img)-np.min(img))
 def load(path):
     img = Image.open(path)
     img = np.uint8(img)
@@ -112,3 +115,12 @@ def ifip():
         cfg = get_ipython().config
         return True
     except NameError: return False
+
+
+if ifip():
+    from IPython.display import clear_output
+    def clear():
+        clear_output()
+else:
+    def clear():
+        pass

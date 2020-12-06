@@ -3,7 +3,7 @@ from tensorflow.keras.applications import vgg19
 from tensorflow.keras.applications import vgg16
 import os
 
-def create_model(model="vgg19", pool="avg", padding="same"):
+def create_model(model="vgg19", pool="avg", padding="valid"):
     if model == "vgg19": default_model = vgg19.VGG19(weights="imagenet", include_top=False)
     elif model == "vgg16": default_model = vgg16.VGG16(weights="imagenet", include_top=False)
     new_layers = []
@@ -29,14 +29,16 @@ def create_model(model="vgg19", pool="avg", padding="same"):
     return model
 
 def load_model(model="vgg19", pool="avg", padding="valid"):
+# def load_model(model="vgg19", pool="max", padding="valid"):
     path = os.path.join("models",model+"_"+pool+"_"+padding+".h5")
     if not os.path.exists(path):
         print("VGG model not found. Creating model...")
         if not os.path.exists("models"): os.mkdir("models")
-        m = create_model(model=model,pool=pool,padding=padding)
+        # m = create_model(model=model,pool=pool,padding=padding)
+        m = create_model()
         m.save(path)
     else: m = keras.models.load_model(path)
     return m
 
 def build(args):
-    return load_model(args["model"],args["pool"],args["padding"])
+    return load_model()

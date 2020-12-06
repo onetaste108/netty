@@ -7,7 +7,8 @@ def preprocess(img):
     x = x - vgg_offsets
     return x
 def deprocess(x):
-    x = np.uint8(x + vgg_offsets)
+    # x = np.uint8(x + vgg_offsets)
+    x = x + vgg_offsets
     return x[...,[2,1,0]]
 def get_bounds(x0):
     bounds = [[- vgg_offsets[0], 255 - vgg_offsets[0]],

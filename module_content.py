@@ -50,7 +50,7 @@ def content_l():
 def build(args):
     vgg = model_vgg.build(args)
 
-    model = extract_layers(vgg, args["content_layers"])
+    model = extract_layers(vgg, args["layers"])
 
     content_layer = content_l()
     model = attach_models(model, content_layer)
@@ -64,7 +64,7 @@ def build(args):
         layer_weight = 1
         layer_loss = mask_loss_l(layer_weight)([targets[i], model.outputs[i], masks[i]])
         losses.append(layer_loss)
-    loss = Lambda(lambda x: K.expand_dims(K.sum(x)) / len(losses) * args["content_w"])(losses)
+    loss = Lambda(lambda x: K.expand_dims(K.sum(x)) / len(losses) * args["weight"])(losses)
 
     loss_model = Model(model.inputs + targets + masks, loss)
 

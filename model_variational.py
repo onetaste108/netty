@@ -12,5 +12,5 @@ def variation_l(weight=0.01, power=1.25):
 
 def build(args):
     inputs = Input(shape=(None,None,3))
-    outs = variation_l(args["variational_w"],args["variational_pow"])(inputs)
+    outs = variation_l(args["weight"],args["power"])(inputs)
     return Model(inputs=inputs, outputs=outs)

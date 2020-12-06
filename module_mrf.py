@@ -76,26 +76,26 @@ def mrf_m(ks,s,l,mix_shape,tar_shape,maps=None):
 
 def build(args):
     vgg = model_vgg.build(args)
-    vgg = extract_layers(vgg, args["mrf_layers"])
+    vgg = extract_layers(vgg, args["layers"])
     model = vgg
 
     targets = []
     losses = []
     layers_num = len(model.outputs)
-    mix_shape = [args["size"][1],args["size"][0]]
-    tar_shape = args["style_shape"]
+    mix_shape = args["shape"]
+    tar_shape = args["target_shape"]
 
     for l in range(layers_num):
         i = layers_num + l
 
         targets.append(Input(model.outputs[l].shape[1:]))
-        layer_weight = 1 / len(args["style_layers"])
-        mrf_model = mrf_m(args["mrf_patch_size"], args["mrf_patch_stride"], args["mrf_layers"][l], mix_shape, tar_shape)
+        layer_weight = 1 / len(args["layers"])
+        mrf_model = mrf_m(args["patch_size"], args["patch_stride"], args["layers"][l], mix_shape, tar_shape)
         layer_loss = mrf_model([model.outputs[l], targets[l]])
         layer_loss = Lambda(lambda x:x*layer_weight)(layer_loss)
         losses.append(layer_loss)
 
-    loss = Lambda(lambda x: K.expand_dims(K.sum(x)) * args["mrf_w"])(losses)
+    loss = Lambda(lambda x: K.expand_dims(K.sum(x)) * args["weight"])(losses)
 
     loss_model = Model(model.inputs + targets, loss)
     return loss_model, model, targets

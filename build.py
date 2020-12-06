@@ -17,36 +17,38 @@ def build(args):
     module_inputs = []
     modules = {}
 
-    if args["variational"]:
-        loss_model = model_variational.build(args)
-        losses.append(loss_model(input))
+    for a in args:
 
-    if args["content"]:
-        loss_model, target_model, targets = module_content.build(args)
-        losses.append(loss_model([input] + targets))
-        module_inputs.extend(targets)
-        modules["content"] = target_model
-    else: modules["content"] = None
+        if a["type"] == "variational":
 
-    if args["style"]:
-        loss_model, target_model, targets = module_style.build(args)
-        losses.append(loss_model([input] + targets))
-        module_inputs.extend(targets)
-        modules["style"] = target_model
-    else: modules["style"] = None
+            loss_model = model_variational.build(a)
+            losses.append(loss_model(input))
 
-    if args["mrf"]:
-        loss_model, target_model, targets = module_mrf.build(args)
-        losses.append(loss_model([input] + targets))
-        module_inputs.extend(targets)
-        modules["mrf"] = target_model
-    else: modules["mrf"] = None
+        elif a["type"] == "content":
 
-    if len(losses) > 0:
-        loss = Lambda(lambda x: K.expand_dims(K.sum(x) / len(losses)))(losses)
-    else:
+            loss_model, target_model, targets = module_content.build(a)
+            losses.append(loss_model([input] + targets))
+            module_inputs.extend(targets)
+            a["module"] = target_model
+
+        elif a["type"] == "style":
+
+            loss_model, target_model, targets = module_style.build(a)
+            losses.append(loss_model([input] + targets))
+            module_inputs.extend(targets)
+            a["module"] = target_model
+
+        elif a["type"] == "mrf": 
+
+            loss_model, target_model, targets = module_mrf.build(args)
+            losses.append(loss_model([input] + targets))
+            module_inputs.extend(targets)
+            a["module"] = target_model
+
+    if len(losses) == 0:
         print("Nothing to optimize")
-        return
+        return None
 
+    loss = Lambda(lambda x: K.expand_dims(K.sum(x) / len(losses)))(losses)
     model = Model([input] + module_inputs, loss)
-    return model, modules
+    return model
