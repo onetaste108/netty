@@ -8,7 +8,7 @@ import netty.imutil as im
 from netty.vgg_utils import *
 from netty import gram_patcher
 from netty import netty_utils as nutil
-# tf.compat.v1.disable_eager_execution()
+tf.compat.v1.disable_eager_execution()
 # tf.disable_eager_execution()
 from tqdm import tqdm
 
